@@ -38,4 +38,15 @@ a similar procedure for our stitching.
 
 https://www.nco.ncep.noaa.gov/sib/jeff/TableD_0_STDv18_LOC7.html
 
+4) Sometimes you may not have the correct spec file-type. For example, you have a base gdas bufr file, but you don't have the
+   corresponding spec gdas bufr file. However, you have a spec gfs bufr file for the same date/time. This can happen when the
+   spec files from ObsProc miss a gdas file generation but follow-up and generate the appropriate gfs file for the same date/time.
+   In this case, you have the opportunity to do a "cross-stitch":
 
+# "Cross-stitch": Pulling spec data from one dump-type and stitching into another dump-type. This is done if
+#                 the spec-file for the date/time doesn't exist for the correct type. For example: we want to
+#                 generate a gdas file but the spec gdas file doesn't exist, however, the spec gfs file for
+#                 the date/time *does* exist. In this case, we can take the spec-list of data from the gfs file
+#                 and stitch it into the base gdas file instead.
+
+Picking the speclist from one bufr dump type and stitching into the base bufr dump of another type.

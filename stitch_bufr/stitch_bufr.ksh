@@ -3,18 +3,20 @@
 # BASETANK: Tank containing all 'base' subsets (default subsets not picked from SPECTANK)
 # SPECTANK: Tank containing all 'specific' subsets being picked for stitching into base subsets
 # TDIR: Name for directory off of CURRDIR to store stitched satwndbufr files
-# CDUMP (INPUT 1): Name for dump file type (typically 'gdas' or 'gfs')
-# YYYYMMDD (INPUT 2): Date in YYYYMMDD format
-# HH (INPUT 3): Hour in HH format
+# BASECDUMP (INPUT 1): Name for base dump file type (typically 'gdas' or 'gfs')
+# SPECCDUMP (INPUT 2): Name for spec dump file type (typically 'gdas' or 'gfs')
+# YYYYMMDD (INPUT 3): Date in YYYYMMDD format
+# HH (INPUT 4): Hour in HH format
 # SPECLIST: List of BUFR tanks to stitch from SPECTANK into satwndbufr from BASETANK
 # SPLITBUFREXEC: Full path to split_by_subset.x executable file
 
 export BASETANK=/scratch1/NCEPDEV/global/glopara/dump
 export SPECTANK=/scratch1/NCEPDEV/stmp4/Brett.Hoover/g18_dumps
 export TDIR=G17toG18
-export CDUMP=${1}
-export YYYYMMDD=${2}
-export HH=${3}
+export BASECDUMP=${1}
+export SPECCDUMP=${2}
+export YYYYMMDD=${3}
+export HH=${4}
 export SPECLIST="NC005030 NC005031 NC005032 NC005034 NC005039"
 export SPLITBUFREXEC=/scratch1/NCEPDEV/stmp4/Brett.Hoover/NCEPLIBS-bufr/build/utils/split_by_subset.x
 
@@ -35,12 +37,12 @@ if [ ! -d ${TMPDIR} ]; then
 fi
 # Enter TMPDIR
 cd ${TMPDIR}
-# Create ${CDUMP}.${YYYYMMDD}/${HH}/atmos if it does not already exist
-if [ ! -d ${CDUMP}.${YYYYMMDD}/${HH}/atmos ]; then
-    mkdir -p ${CDUMP}.${YYYYMMDD}/${HH}/atmos
+# Create ${BASECDUMP}.${YYYYMMDD}/${HH}/atmos if it does not already exist
+if [ ! -d ${BASECDUMP}.${YYYYMMDD}/${HH}/atmos ]; then
+    mkdir -p ${BASECDUMP}.${YYYYMMDD}/${HH}/atmos
 fi
-# Enter ${CDUMP}/${YYYYMMDD}/${HH}/atmos
-cd ${CDUMP}.${YYYYMMDD}/${HH}/atmos
+# Enter ${BASECDUMP}/${YYYYMMDD}/${HH}/atmos
+cd ${BASECDUMP}.${YYYYMMDD}/${HH}/atmos
 # Create BASETANK and SPECTANK subdirectories if they do not already exist
 if [ ! -d BASETANK ]; then
     mkdir -p BASETANK
@@ -50,7 +52,7 @@ if [ ! -d SPECTANK ]; then
 fi
 
 # Copy satwndbufr file from BASETANK and SPECTANK to respective subdirectories
-export SATWNDBUFR=${BASETANK}/${CDUMP}.${YYYYMMDD}/${HH}/atmos/${CDUMP}.t${HH}z.satwnd.tm00.bufr_d
+export SATWNDBUFR=${BASETANK}/${BASECDUMP}.${YYYYMMDD}/${HH}/atmos/${BASECDUMP}.t${HH}z.satwnd.tm00.bufr_d
 if [ -f ${SATWNDBUFR} ]; then
     cp ${SATWNDBUFR} BASETANK/satwnd_base
 else
@@ -60,7 +62,7 @@ else
     rm -rf ./SPECTANK
     exit
 fi
-export SATWNDBUFR=${SPECTANK}/${CDUMP}.${YYYYMMDD}/${HH}/atmos/${CDUMP}.t${HH}z.satwnd.tm00.bufr_d
+export SATWNDBUFR=${SPECTANK}/${SPECCDUMP}.${YYYYMMDD}/${HH}/atmos/${SPECCDUMP}.t${HH}z.satwnd.tm00.bufr_d
 if [ -f ${SATWNDBUFR} ]; then
     cp ${SATWNDBUFR} SPECTANK/satwnd_spec
 else
@@ -109,7 +111,7 @@ for TANK in NC005*; do
 done
 echo "${TANKLIST}"
 # Concatenate TANKLIST to new satwndbufr file
-cat ${TANKLIST} > ./${CDUMP}.t${HH}z.satwnd.tm00.bufr_d
+cat ${TANKLIST} > ./${BASECDUMP}.t${HH}z.satwnd.tm00.bufr_d
 
 # Cleanup all NC005* tanks, BASETANK and SPECTANK subdirectories, and splitbufr.x
 rm -f ./NC005*
