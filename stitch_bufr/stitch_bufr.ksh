@@ -9,17 +9,20 @@
 # HH (INPUT 4): Hour in HH format
 # SPECLIST: List of BUFR tanks to stitch from SPECTANK into satwndbufr from BASETANK
 # SPLITBUFREXEC: Full path to split_by_subset.x executable file
-
+# SETMISSING: Define how to handle cases where tank from SPECLIST is not found in SPECTANK
+#             "COPY" == copy the tank from BASETANK instead, if it exists
+#             "KILL" == leave the missing tank entirely missing from the new BUFR file
 export BASETANK=/scratch1/NCEPDEV/global/glopara/dump
-export SPECTANK=/scratch1/NCEPDEV/stmp4/Brett.Hoover/g18_dumps
-export TDIR=G17toG18
+export SPECTANK=/scratch2/NCEPDEV/stmp3/Brett.Hoover/GOES_test_data/EA_GOESR_GROUND_SYS
+export TDIR=GOESEA
 export BASECDUMP=${1}
 export SPECCDUMP=${2}
 export YYYYMMDD=${3}
 export HH=${4}
 export SPECLIST="NC005030 NC005031 NC005032 NC005034 NC005039"
 export SPLITBUFREXEC=/scratch1/NCEPDEV/stmp4/Brett.Hoover/NCEPLIBS-bufr/build/utils/split_by_subset.x
-
+export SETMISSING="KILL"
+#
 ####### Probably no further changes necessary below this line ##########
 
 # Define TMPDIR off of current directory and assert SPLITBUFREXEC
@@ -101,6 +104,21 @@ for SPEC in $SPECLIST; do
         cp SPECTANK/${SPEC} .
     else
         echo "SPEC: ${SPEC} DOES NOT EXIST, SKIPPING"
+        if [ "${SETMISSING}" = "COPY" ]; then
+            # You can do nothing here, the default behavior is to keep the already-existing subset from BASETANK, if it exists
+            echo "${SPEC} COPIED FROM BASE IF FOUND"
+        elif [ "${SETMISSING}" = "KILL" ]; then
+            # Delete already-existing ${SPEC} from BASETANK, if it exists
+            if [ -f ${SPEC} ]; then
+                echo "${SPEC} FROM BASE REMOVED"
+                rm ${SPEC}
+            else
+                echo "${SPEC} FROM BASE NOT FOUND, DOING NOTHING"
+            fi
+        else
+            # Unknown ${SETMISSING} value, defaulting to "COPY" behavior
+            echo "SETMISSING=${SETMISSING} UNKNOWN, DEFAULTING TO COPY FROM BASE IF FOUND"
+        fi
     fi
 done
 

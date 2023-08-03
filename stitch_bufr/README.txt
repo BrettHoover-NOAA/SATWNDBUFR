@@ -50,3 +50,15 @@ https://www.nco.ncep.noaa.gov/sib/jeff/TableD_0_STDv18_LOC7.html
 #                 and stitch it into the base gdas file instead.
 
 Picking the speclist from one bufr dump type and stitching into the base bufr dump of another type.
+
+5) If a tank specified in SPECLIST is not found in SPECTANK, the default behavior is to leave the equivalent tank from
+   BASETANK in the newly created BUFR file, if it exists. This may not be desirable behavior, e.g.: you are testing data
+   in SPECTANK that should be fully replacing the equivalent data in BASETANK, in which case a data dropout in SPECTANK should
+   generate a new BUFR file with *nothing* in the missing tanks, rather than back-filling with the data from BASETANK instead.
+
+   This functionality is now added as a setting in stitch_bufr.ksh called SETMISSING
+
+   SETMISSING="COPY" --> (default) if tank from SPECLIST is missing from SPECTANK, will keep equivalent tank from BASETANK if it exists
+   SETMISSING="KILL" --> if tank from SPECLIST is missing from SPECTANK, will delete tank so it is missing entirely in new BUFR file
+
+   Any other setting for SETMISSING will raise an error but default to "COPY" behavior.
