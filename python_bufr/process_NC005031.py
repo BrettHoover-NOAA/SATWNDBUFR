@@ -1,25 +1,25 @@
-# data ingest and pre-QC checks on GOES LWIR AMVs from NC005030 tank
+# data ingest and pre-QC checks on GOES WVDL AMVs from NC005031 tank
 
 import bufr
 import numpy as np
 
-DATA_PATH = './NC005030'
+DATA_PATH = './NC005031'
 
 queryDict = {
-             'NC005030/CLATH'       : 'latitude',               # (nobs,) dimension
-             'NC005030/CLONH'       : 'longitude',              # (nobs,) dimension
-             'NC005030/PRLC[1]'     : 'pressure',               # (nobs,) dimension, there are multiple copies of PRLC but should all be identical
-             'NC005030/WSPD'        : 'windSpeed',              # (nobs,) dimension
-             'NC005030/WDIR'        : 'windDirection',          # (nobs,) dimension, as (int) type
-             'NC005030/YEAR'        : 'year',                   # (nobs,) dimension, as (int) type
-             'NC005030/MNTH'        : 'month',                  # (nobs,) dimension, as (int) type
-             'NC005030/DAYS'        : 'days',                   # (nobs,) dimension, as (int) type
-             'NC005030/HOUR'        : 'hour',                   # (nobs,) dimension, as (int) type
-             'NC005030/MINU'        : 'minu',                   # (nobs,) dimension, as (int) type 
-             'NC005030/SAZA'        : 'zenithAngle',            # (nobs,) dimension
-             'NC005030/AMVQIC/PCCF' : 'QIEE',                   # (nobs,4) dimension, GSI uses AMVQIC(2,2), so I will draw [:,1] here
+             'NC005031/CLATH'       : 'latitude',               # (nobs,) dimension
+             'NC005031/CLONH'       : 'longitude',              # (nobs,) dimension
+             'NC005031/PRLC[1]'     : 'pressure',               # (nobs,) dimension, there are multiple copies of PRLC but should all be identical
+             'NC005031/WSPD'        : 'windSpeed',              # (nobs,) dimension
+             'NC005031/WDIR'        : 'windDirection',          # (nobs,) dimension, as (int) type
+             'NC005031/YEAR'        : 'year',                   # (nobs,) dimension, as (int) type
+             'NC005031/MNTH'        : 'month',                  # (nobs,) dimension, as (int) type
+             'NC005031/DAYS'        : 'days',                   # (nobs,) dimension, as (int) type
+             'NC005031/HOUR'        : 'hour',                   # (nobs,) dimension, as (int) type
+             'NC005031/MINU'        : 'minu',                   # (nobs,) dimension, as (int) type 
+             'NC005031/SAZA'        : 'zenithAngle',            # (nobs,) dimension
+             'NC005031/AMVQIC/PCCF' : 'QIEE',                   # (nobs,4) dimension, GSI uses AMVQIC(2,2), so I will draw [:,1] here
                                                                 #                     GSI uses AMVQIC(2,4) for expectedError, so I will draw [:,3] here
-             'NC005030/AMVIVR/CVWD' : 'coefficientOfVariation'  # (nobs,2) dimension, GSI uses AMVIVR(2,1), so I will draw [:,0] here
+             'NC005031/AMVIVR/CVWD' : 'coefficientOfVariation'  # (nobs,2) dimension, GSI uses AMVIVR(2,1), so I will draw [:,0] here
             }
 # bufr_query: make a stack of BUFR queries and return resultSet object containing data
 #
