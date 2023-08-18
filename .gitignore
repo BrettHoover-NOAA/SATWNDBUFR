@@ -1,0 +1,11 @@
+# any run-directories under stitch_bufr
+stitch_bufr/run_*
+# ioda-bundle subdirectory under python_bufr
+python_bufr/ioda-bundle/
+# executables under python_bufr
+python_bufr/*.x
+python_bufr/bufr.cpython-36m-x86_64-linux-gnu.so
+# test data under python_bufr
+python_bufr/NC005*
+python_bufr/*.bufr_d
+python_bufr/*.queries

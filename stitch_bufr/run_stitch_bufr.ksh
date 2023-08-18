@@ -2,7 +2,7 @@
 
 # Loops stitch_bufr.ksh over selected date-times
 
-export BDMP=gdas
+export BDMP=gfs
 export SDMP=gfs
 
 # "Cross-stitch": Pulling spec data from one dump-type and stitching into another dump-type. This is done if
@@ -12,11 +12,15 @@ export SDMP=gfs
 #                 and stitch it into the base gdas file instead.
 
 export YYYY=2022
-export MM=10
-export DD=23
-export HH=06
-
-export YMD=${YYYY}${MM}${DD}
-echo "${BDMP} ${SDMP} ${YMD} ${HH}"
-./stitch_bufr.ksh ${BDMP} ${SDMP} ${YMD} ${HH}
-
+export MM=11
+export DD=09
+export HH=18
+#for DD in 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20
+#do
+#    for HH in 00 06 12 18
+#    do
+        export YMD=${YYYY}${MM}${DD}
+        echo "${BDMP} ${SDMP} ${YMD} ${HH}"
+        ./stitch_bufr.ksh ${BDMP} ${SDMP} ${YMD} ${HH}
+#    done
+#done
