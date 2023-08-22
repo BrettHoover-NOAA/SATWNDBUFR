@@ -1,0 +1,11 @@
+name: python_bufr
+channels:
+  - defaults
+dependencies:
+  - python=3.6.8
+  - numpy
+  - matplotlib
+  - netcdf4
+  - cartopy
+  - jupyter
+  - conda-build
