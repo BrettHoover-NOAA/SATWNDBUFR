@@ -22,6 +22,7 @@ def bufr_query(bufrFile, queryDict):
     # return resultSet object
     return r
 
+
 # process_NC005030: draws NC005030 observations (GOES LWIR AMVs) from BUFR file, and returns
 #                   variables based on entries in returnDict.
 #
@@ -2253,3 +2254,292 @@ def process_NC005091(bufrFileName, returnDict):
     #
     # end
     #
+
+
+# process_satwnd_tank: rout satwnd processing to proper process_<tank>() routine based on tank name, fix some common inputs that
+#                      vary between tanks (e.g. specifying 'CLAT' vs 'CLATH' for some tanks when returning latitudes).
+#
+# INPUTS:
+#    tankName: name of tank (string, NC005xxx)
+#    bufrFileName: full-path to BUFR file (string)
+#    returnDict: dictionary with key/value pairs representing
+#                    keys: BUFR query (string)
+#                    values: variable name (string)
+#
+# OUTPUTS:
+#   outputDict: output dictionary from satwnd processing
+#
+# DEPENDENCIES:
+#
+# all process_<tank> funtions (above)
+#
+def process_satwnd_tank(tankName, bufrFileName, returnDict):
+    # specify processing basedon tankName
+    if tankName == 'NC005030':
+        # processing GOES LWIR AMVs
+        # some quirks:
+        # 1) specify pressure key as PRLC[1], there are multiple repititions of PRLC but they should all be identical
+        # 2) use 'CLATH' and 'CLONH' for lat/lon values (high-precision)
+        for key in list(returnDict.keys()):
+            if 'NC005030/PRLC' in key:
+                if key[-4:] == 'PRLC':
+                    newKey = key + '[1]'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005030/CLAT' in key:
+                if key[-4:] == 'CLAT':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005030/CLON' in key:
+                if key[-4:] == 'CLON':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+        # process and return outputDict
+        outputDict = process_NC005030(bufrFileName, returnDict)
+        return outputDict
+    # specify processing based on tankName
+    if tankName == 'NC005031':
+        # processing GOES WVDL AMVs
+        # some quirks:
+        # 1) specify pressure key as PRLC[1], there are multiple repititions of PRLC but they should all be identical
+        # 2) use 'CLATH' and 'CLONH' for lat/lon values (high-precision)
+        for key in list(returnDict.keys()):
+            if 'NC005031/PRLC' in key:
+                if key[-4:] == 'PRLC':
+                    newKey = key + '[1]'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005031/CLAT' in key:
+                if key[-4:] == 'CLAT':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005031/CLON' in key:
+                if key[-4:] == 'CLON':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+        # process and return outputDict
+        outputDict = process_NC005031(bufrFileName, returnDict) 
+        return outputDict
+    if tankName == 'NC005032':
+        # processing GOES VIS AMVs
+        # some quirks:
+        # 1) specify pressure key as PRLC[1], there are multiple repititions of PRLC but they should all be identical
+        # 2) use 'CLATH' and 'CLONH' for lat/lon values (high-precision)
+        for key in list(returnDict.keys()):
+            if 'NC005032/PRLC' in key:
+                if key[-4:] == 'PRLC':
+                    newKey = key + '[1]'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005032/CLAT' in key:
+                if key[-4:] == 'CLAT':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005032/CLON' in key:
+                if key[-4:] == 'CLON':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+        # process and return outputDict
+        outputDict = process_NC005032(bufrFileName, returnDict) 
+        return outputDict
+    if tankName == 'NC005034':
+        # processing GOES WVCT AMVs
+        # some quirks:
+        # 1) specify pressure key as PRLC[1], there are multiple repititions of PRLC but they should all be identical
+        # 2) use 'CLATH' and 'CLONH' for lat/lon values (high-precision)
+        for key in list(returnDict.keys()):
+            if 'NC005034/PRLC' in key:
+                if key[-4:] == 'PRLC':
+                    newKey = key + '[1]'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005034/CLAT' in key:
+                if key[-4:] == 'CLAT':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005034/CLON' in key:
+                if key[-4:] == 'CLON':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+        # process and return outputDict
+        outputDict = process_NC005034(bufrFileName, returnDict) 
+        return outputDict
+    if tankName == 'NC005039':
+        # processing GOES SWIR AMVs
+        # some quirks:
+        # 1) specify pressure key as PRLC[1], there are multiple repititions of PRLC but they should all be identical
+        # 2) use 'CLATH' and 'CLONH' for lat/lon values (high-precision)
+        for key in list(returnDict.keys()):
+            if 'NC005039/PRLC' in key:
+                if key[-4:] == 'PRLC':
+                    newKey = key + '[1]'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005039/CLAT' in key:
+                if key[-4:] == 'CLAT':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005039/CLON' in key:
+                if key[-4:] == 'CLON':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+        # process and return outputDict
+        outputDict = process_NC005039(bufrFileName, returnDict) 
+        return outputDict
+    if tankName == 'NC005044':
+        # processing JMA IR/VIS/WV AMVs
+        # no quirks reported
+        # process and return outputDict
+        outputDict = process_NC005044(bufrFileName, returnDict)
+        return outputDict
+    if tankName == 'NC005045':
+        # processing JMA IR/VIS/WV AMVs
+        # no quirks reported
+        # process and return outputDict
+        outputDict = process_NC005045(bufrFileName, returnDict)
+        return outputDict
+    if tankName == 'NC005046':
+        # processing JMA IR/VIS/WV AMVs
+        # no quirks reported
+        # process and return outputDict
+        outputDict = process_NC005046(bufrFileName, returnDict)
+        return outputDict
+    if tankName == 'NC005067':
+        # processing EUMETSAT IR/VIS/WV AMVs
+        # some quirks:
+        # 1) specify pressure key as PRLC[1], there are multiple repititions of PRLC but they should all be identical
+        # 2) use 'CLATH' and 'CLONH' for lat/lon values (high-precision)
+        for key in list(returnDict.keys()):
+            if 'NC005067/PRLC' in key:
+                if key[-4:] == 'PRLC':
+                    newKey = key + '[1]'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005067/CLAT' in key:
+                if key[-4:] == 'CLAT':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005067/CLON' in key:
+                if key[-4:] == 'CLON':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+        # process and return outputDict
+        outputDict = process_NC005067(bufrFileName, returnDict)
+        return outputDict
+    if tankName == 'NC005068':
+        # processing EUMETSAT IR/VIS/WV AMVs
+        # some quirks:
+        # 1) specify pressure key as PRLC[1], there are multiple repititions of PRLC but they should all be identical
+        # 2) use 'CLATH' and 'CLONH' for lat/lon values (high-precision)
+        for key in list(returnDict.keys()):
+            if 'NC005068/PRLC' in key:
+                if key[-4:] == 'PRLC':
+                    newKey = key + '[1]'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005068/CLAT' in key:
+                if key[-4:] == 'CLAT':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005068/CLON' in key:
+                if key[-4:] == 'CLON':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+        # process and return outputDict
+        outputDict = process_NC005068(bufrFileName, returnDict)
+        return outputDict
+    if tankName == 'NC005069':
+        # processing EUMETSAT IR/VIS/WV AMVs
+        # some quirks:
+        # 1) specify pressure key as PRLC[1], there are multiple repititions of PRLC but they should all be identical
+        # 2) use 'CLATH' and 'CLONH' for lat/lon values (high-precision)
+        for key in list(returnDict.keys()):
+            if 'NC005069/PRLC' in key:
+                if key[-4:] == 'PRLC':
+                    newKey = key + '[1]'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005069/CLAT' in key:
+                if key[-4:] == 'CLAT':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005069/CLON' in key:
+                if key[-4:] == 'CLON':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+        # process and return outputDict
+        outputDict = process_NC005069(bufrFileName, returnDict)
+        return outputDict
+    if tankName == 'NC005070':
+        # processing TERRA/AQUA IR/WV AMVs
+        # no quirks reported
+        # process and return outputDict
+        outputDict = process_NC005070(bufrFileName, returnDict)
+        return outputDict
+    if tankName == 'NC005071':
+        # processing TERRA/AQUA IR/WV AMVs
+        # no quirks reported
+        # process and return outputDict
+        outputDict = process_NC005071(bufrFileName, returnDict)
+        return outputDict
+    if tankName == 'NC005080':
+        # processing NOAA IR LEO AMVs (AVHRR)
+        # no quirks reported
+        # process and return outputDict
+        outputDict = process_NC005080(bufrFileName, returnDict)
+        return outputDict
+    if tankName == 'NC005081':
+        # processing METOP IR LEO AMVs (AVHRR)
+        # some quirks:
+        # 1) specify pressure key as PRLC[1], there are multiple repititions of PRLC but they should all be identical
+        # 2) use 'CLATH' and 'CLONH' for lat/lon values (high-precision)
+        for key in list(returnDict.keys()):
+            if 'NC005081/PRLC' in key:
+                if key[-4:] == 'PRLC':
+                    newKey = key + '[1]'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005081/CLAT' in key:
+                if key[-4:] == 'CLAT':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005081/CLON' in key:
+                if key[-4:] == 'CLON':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+        # process and return outputDict
+        outputDict = process_NC005081(bufrFileName, returnDict)
+        return outputDict
+    if tankName == 'NC005090':
+        # processing NOAA VIIRS AMVs
+        # some quirks:
+        # 1) specify pressure key as PRLC[1], there are multiple repititions of PRLC but they should all be identical
+        # 2) use 'CLATH' and 'CLONH' for lat/lon values (high-precision)
+        for key in list(returnDict.keys()):
+            if 'NC005090/PRLC' in key:
+                if key[-4:] == 'PRLC':
+                    newKey = key + '[1]'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005090/CLAT' in key:
+                if key[-4:] == 'CLAT':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005090/CLON' in key:
+                if key[-4:] == 'CLON':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+        # process and return outputDict
+        outputDict = process_NC005090(bufrFileName, returnDict)
+        return outputDict
+    if tankName == 'NC005091':
+        # processing NOAA VIIRS AMVs (new BUFR sequence)
+        # some quirks:
+        # 1) specify pressure key as PRLC[1], there are multiple repititions of PRLC but they should all be identical
+        # 2) use 'CLATH' and 'CLONH' for lat/lon values (high-precision)
+        for key in list(returnDict.keys()):
+            if 'NC005091/PRLC' in key:
+                if key[-4:] == 'PRLC':
+                    newKey = key + '[1]'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005091/CLAT' in key:
+                if key[-4:] == 'CLAT':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005091/CLON' in key:
+                if key[-4:] == 'CLON':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+        # process and return outputDict
+        outputDict = process_NC005091(bufrFileName, returnDict)
+        return outputDict

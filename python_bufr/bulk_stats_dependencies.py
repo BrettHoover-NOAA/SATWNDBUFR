@@ -145,14 +145,14 @@ def ob_hist_latlonpre(ob_lat,ob_lon,ob_pre,lat_rng,lon_rng,pre_rng,figax1,figax2
     return figax1, figax2, figax3
 
 
-def ob_hist_spddirqi(ob_spd,ob_dir,ob_qi,spd_rng,dir_rng,qi_thresh,figax1,figax2,figax3):
-    # Generates histograms of ob-count by wind speed and direction, and a pie-chart of obs >= or < qi_thresh
+def ob_hist_spddirqc(ob_spd,ob_dir,ob_qc,spd_rng,dir_rng,figax1,figax2,figax3):
+    # Generates histograms of ob-count by wind speed and direction, and a pie-chart of obs passing/failing pre-QC
     # The direction-histogram is polar-oriented wth 0-deg facing south, as per wind convention
     # Designed to fit the 3 plots into the following axis
     # spaces:
     #    (1) windrose plot:    fig.add_axes([0.,0.,0.45,0.4],projection='polar')
     #    (2) speed histogram:  fig.add_axes([0.,0.52,0.9,0.33])
-    #    (3) qi pi-chart:      fig.add_axes([0.5,0.,0.45,0.4])
+    #    (3) qc pi-chart:      fig.add_axes([0.5,0.,0.45,0.4])
     #
     #   -----------------------------
     #   |            2              |
@@ -165,10 +165,9 @@ def ob_hist_spddirqi(ob_spd,ob_dir,ob_qi,spd_rng,dir_rng,qi_thresh,figax1,figax2
     # INPUTS
     #   ob_spd: vector of observation speeds
     #   ob_dir: vector of observation directions
-    #   ob_qi: vector of observation quality-indicator values (typically QIFN or EE)
+    #   ob_qc: vector of observation pre-QC check flags (1==pass, -1==fail)
     #   spd_rng: vector of speed bin-edges
     #   dir_rng: vector of direction bin-edges
-    #   qi_thresh: threshold of quality-indicator for good/bad obs
     #   figax(1,2,3): figure axes for plots 1, 2, 3
     # OUTPUTS
     #   figreturn: returned axes
@@ -178,7 +177,7 @@ def ob_hist_spddirqi(ob_spd,ob_dir,ob_qi,spd_rng,dir_rng,qi_thresh,figax1,figax2
     import matplotlib.pyplot as plt
     import matplotlib.cm as cm
     # NOTES:
-    #       Sometimes QI is all np.nan values, in which case we will present a blank pie-chart
+    #       Sometimes QC is all np.nan values, in which case we will present a blank pie-chart
     #
     # Generate windrose (polar histogram)
     ax=figax1
@@ -197,18 +196,18 @@ def ob_hist_spddirqi(ob_spd,ob_dir,ob_qi,spd_rng,dir_rng,qi_thresh,figax1,figax2
     ax.set_title('wind speed')
     # Generate pi-chart
     ax=figax3
-    labels=['qi>={:.0f}'.format(qi_thresh),'qi<{:.0f}'.format(qi_thresh)]
-    y=np.where(np.isnan(ob_qi)==False)
+    labels=['pass pre-QC','fail pre-QC']
+    y=np.where(np.isnan(ob_qc)==False)
     if (np.size(y)>0):
-        sizes=[np.size(np.where(ob_qi[y]>=qi_thresh)),np.size(np.where(ob_qi[y]<qi_thresh))]
+        sizes=[np.size(np.where(ob_qc[y]>0.)),np.size(np.where(ob_qc[y]<0.))]
         ax.pie(sizes, labels=labels, autopct='%1.1f%%',shadow=False, startangle=90,colors=['#00C5FF','#FF2D2D'])
         ax.axis('equal')
-        ax.set_title('quality indicator')
+        ax.set_title('pre-QC check')
     # Return
     return figax1,figax2,figax3
 
 
-def stage_scorecard(ob_lat,ob_lon,ob_pre,ob_spd,ob_dir,ob_qi,qi_thresh=85.):
+def stage_scorecard(ob_lat,ob_lon,ob_pre,ob_spd,ob_dir,ob_qc):
     # Stages sub-figures for score-card layout
     # INPUTS
     #   ob_lat: vector of ob latitudes
@@ -216,11 +215,10 @@ def stage_scorecard(ob_lat,ob_lon,ob_pre,ob_spd,ob_dir,ob_qi,qi_thresh=85.):
     #   ob_pre: vector of ob pressures (Pa)
     #   ob_spd: vector of ob speeds
     #   ob_dir: vector of ob directions
-    #   ob_qi: vector of ob quality-indicator values (usually QIFN, can also be EE)
-    #   qi_threshold: threshold quality-indicator value for good/bad ob (often 85., as default)
+    #   ob_qc: vector of observation pre-QC check flags (1==pass, -1==fail)
     # OUTPUTS
     #   fighdl: figure handle containing plot
-    # DEPENDENCIES: matplotlib, ob_density_plot, ob_hist_latlonpre, ob_hist_spddir
+    # DEPENDENCIES: matplotlib, ob_density_plot, ob_hist_latlonpre, ob_hist_spddirqc
     #
     import numpy as np
     import matplotlib.pyplot as plt
@@ -256,17 +254,17 @@ def stage_scorecard(ob_lat,ob_lon,ob_pre,ob_spd,ob_dir,ob_qi,qi_thresh=85.):
     lon_rng=np.arange(0.,360.1,10.)
     pre_rng=np.arange(10000.,110000.1,5000.)
     ax1,ax2,ax3=ob_hist_latlonpre(ob_lat,ob_lon,ob_pre,lat_rng,lon_rng,pre_rng,ax1,ax2,ax3)
-    # Right sub-subfigure: ob_hist_spddirqi
+    # Right sub-subfigure: ob_hist_spddirqc
     #ssfig=ssfigs[1]
-    obHistSpdDirQIFig = plt.figure(figsize=(10.5,7))
-    ssfig=obHistSpdDirQIFig
+    obHistSpdDirQCFig = plt.figure(figsize=(10.5,7))
+    ssfig=obHistSpdDirQCFig
     ax1=ssfig.add_axes([0.,0.,0.45,0.4],projection='polar')
     ax2=ssfig.add_axes([0.,0.52,0.9,0.33])
     ax3=ssfig.add_axes([0.5,0.,0.45,0.4])
     spd_rng=np.arange(0.,100.1,2.)
     dir_rng=np.arange(0.,360.1,15.)
-    ax1,ax2,ax3=ob_hist_spddirqi(ob_spd,ob_dir,ob_qi,spd_rng,dir_rng,qi_thresh,ax1,ax2,ax3)
+    ax1,ax2,ax3=ob_hist_spddirqc(ob_spd,ob_dir,ob_qc,spd_rng,dir_rng,ax1,ax2,ax3)
     # Return figax
     # NOTE: return individual figures instead, if subfigures are not available
     #return figax
-    return obDensityFig, obHistLatLonPreFig, obHistSpdDirQIFig
+    return obDensityFig, obHistLatLonPreFig, obHistSpdDirQCFig
