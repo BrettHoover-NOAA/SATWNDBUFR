@@ -11,5 +11,7 @@ python_bufr/*.bufr_d
 python_bufr/*.queries
 python_bufr/*.png
 python_bufr/*.tar
+python_bufr/*.nc
+python_bufr/*.gz
 # other tidiness
 python_bufr/__pycache__/
