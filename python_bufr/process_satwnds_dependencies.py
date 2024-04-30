@@ -1959,6 +1959,78 @@ def process_NC005071(bufrFileName, returnDict):
     # end
     #
 
+# process_NC005072: draws NC005072 observations (LEO/GEO IR AMVs) from BUFR file, and returns
+#                   variables based on entries in returnDict.
+#
+# INPUTS:
+#    bufrFileName: full-path to BUFR file (string)
+#    returnDict: dictionary with key/value pairs representing
+#                    keys: BUFR query (string)
+#                    values: variable name (string)
+#
+# OUTPUTS:
+#    outputDict: dictionary with key/value pairs representing
+#                    keys: variable name (string)
+#                    values: vector of values (numpy vector)
+#
+# DEPENDENCIES:
+#    numpy
+#    bufr
+#    bufr_query (above)
+def process_NC005072(bufrFileName, returnDict):
+    import numpy as np
+    import bufr
+    #
+    # No pre-QC checks on NC005072, return preQC as effectively all passed (=1) values
+    #
+    #
+    # begin
+    #
+    # define dictionary of query/variable key/value pairs needed for pre_qc()
+    # (NO pre-QC for this tank, but windComputationMethod required to determine observationType values)
+    queryDict = {
+                 'NC005072/SWCM' : 'windComputationMethod'          # (nobs,) dimension
+                }
+    # merge this dictionary with returnDict, defaulting to these values where appropriate
+    mergedDict = returnDict.copy()
+    mergedDict.update(queryDict)
+    # obtain resultSet from bufr_query()
+    resultSet = bufr_query(bufrFileName, mergedDict)
+    # initialize empty arrays for each pre-QC variable
+    windComputationMethod  = np.asarray([])
+    # loop through keys, extract array from resultSet and append to appropriate variable array
+    # and/or outputDict as appropriate.
+    outputDict = {}
+    for varName in list(returnDict.values()):
+        outputDict[varName] = np.asarray([])
+    for key in list(mergedDict.keys()):
+        print('processing '+ key + '...')
+        x = resultSet.get(mergedDict[key])
+        if mergedDict[key] == 'windComputationMethod':
+            windComputationMethod = np.append(windComputationMethod, x)
+            if 'windComputationMethod' in list(returnDict.values()):
+                outputDict['windComputationMethod'] = np.append(outputDict['windComputationMethod'], x)
+        else:
+            # all variables in mergedDict not in queryDict, assumed to be simple variables with no
+            # unpacking of multi-dimensional arrays necessary, but if any special cases exist feel free
+            # to add them here
+            print('key: ' + key + ' is NOT a pre-QC key')
+            if mergedDict[key] in list(returnDict.values()):
+                outputDict[mergedDict[key]] = np.append(outputDict[mergedDict[key]], x)
+    # send "pre-QC" check indices as all-pass (=1)
+    preQC = np.ones((np.size(windComputationMethod),), dtype='int')
+    # append preQC to outputDict
+    outputDict['preQC'] = preQC
+    # create a obType variable and assign values based on windComputationMethod
+    obType = -1 * np.ones(np.shape(preQC), dtype='int')
+    obType[np.where(windComputationMethod == 1)] = 255  # IR
+    # append obType to outputDict
+    outputDict['observationType'] = obType
+    # return outputDict
+    return outputDict
+    #
+    # end
+    #
 
 # process_NC005080: draws NC005080 observations (NOAA LEO IR AMVs) from BUFR file, and returns
 #                   variables based on entries in returnDict.
@@ -2473,6 +2545,22 @@ def process_satwnd_tank(tankName, bufrFileName, returnDict):
         # no quirks reported
         # process and return outputDict
         outputDict = process_NC005071(bufrFileName, returnDict)
+        return outputDict
+    if tankName == 'NC005072':
+        # processing LEO/GEO IR AMVs
+        # some quirks:
+        # 1) use 'CLATH' and 'CLONH' for lat/lon values (high-precision)
+        for key in list(returnDict.keys()):
+            if 'NC005072/CLAT' in key:
+                if key[-4:] == 'CLAT':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+            if 'NC005072/CLON' in key:
+                if key[-4:] == 'CLON':
+                    newKey = key + 'H'
+                    returnDict[newKey] = returnDict.pop(key)
+        # process and return outputDict
+        outputDict = process_NC005072(bufrFileName, returnDict)
         return outputDict
     if tankName == 'NC005080':
         # processing NOAA IR LEO AMVs (AVHRR)
